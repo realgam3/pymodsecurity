@@ -26,6 +26,13 @@ void init_modsecurity(py::module &m)
                 modSecLogCb((char *)arg1, (const char *)arg2);
             });
         })
+        .def("unsetServerLogCb", [](ModSecurity &ms) {
+			std::function<void(char *, const char *)> pycb;
+            modSecLogCb = pycb;
+			
+			ModSecLogCb cb;
+			ms.setServerLogCb(cb);
+        })
         .def("setServerLogCb2", [](ModSecurity &ms, std::function<void(char *, const RuleMessage *)> cb) {
             modSecLogCb2 = cb;
             ms.setServerLogCb(+[](void *arg1, const void *arg2) {
@@ -43,6 +50,13 @@ void init_modsecurity(py::module &m)
             ms.setServerLogCb(+[](void *arg1, const void *arg2) {
                 modSecLogCb2((char *)arg1, (const RuleMessage *)arg2);
             }, properties);
+        })
+        .def("unsetServerLogCb2", [](ModSecurity &ms) {
+			std::function<void(char *, const RuleMessage *)> pycb;
+            modSecLogCb2 = pycb;
+			
+			ModSecLogCb cb;
+			ms.setServerLogCb(cb);
         })
         .def("serverLog", [](ModSecurity &ms, char *data, RuleMessage rm) {
             ms.serverLog((void *) data, std::make_shared<RuleMessage>(rm));
